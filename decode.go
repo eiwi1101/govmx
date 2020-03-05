@@ -53,7 +53,14 @@ func (d *Decoder) loadVMXMap() error {
 
 		parts := strings.Split(line, "=")
 		if len(parts) != 2 {
-			errors = appendErrors(errors, fmt.Errorf("Invalid line: %s ", line))
+			first := strings.TrimSpace(parts[1])
+			last := strings.TrimSpace(parts[len(parts)-1])
+
+			if strings.HasPrefix(first, "\"") && strings.HasSuffix(last, "\"") {
+				parts = []string{parts[0], strings.Join(parts[1:], "=")}
+			} else {
+				errors = appendErrors(errors, fmt.Errorf("Invalid line: %s", line))
+			}
 		}
 
 		key := strings.TrimSpace(parts[0])
